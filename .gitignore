@@ -5,8 +5,14 @@
 .env
 
 # data folders
-/Users/zuhayrshariff/PycharmProjects/Predict_Stat_arb/data/raw
-/Users/zuhayrshariff/PycharmProjects/Predict_Stat_arb/data/processed
+data/raw/
+data/processed/
+
+# IDE settings
+.idea/
+
+# macOS system files
+.DS_Store
 
 # Python cache
 __pycache__/
