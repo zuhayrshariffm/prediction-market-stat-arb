@@ -1,0 +1,13 @@
+# virtual environment
+.venv/
+
+# environment variables
+.env
+
+# data folders
+/Users/zuhayrshariff/PycharmProjects/Predict_Stat_arb/data/raw
+/Users/zuhayrshariff/PycharmProjects/Predict_Stat_arb/data/processed
+
+# Python cache
+__pycache__/
+*.pyc
