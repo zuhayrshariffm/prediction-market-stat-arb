@@ -1,17 +1,23 @@
 from polymarket_client import PolymarketClient
 import json
 
-client = PolymarketClient()
+### Kalshi API
 
-cleaned_markets = client.get_all_clean_markets(50)
+from datetime import datetime, timedelta, timezone
+from kalshi_client import KalshiClient
 
-import pandas as pd
+client = KalshiClient()
 
-df = pd.DataFrame(cleaned_markets)
+end_ts = int(datetime.now(timezone.utc).timestamp())
+start_ts = int((datetime.now(timezone.utc) - timedelta(days=7)).timestamp())
 
-from pathlib import Path
+candles = client.get_market_candlesticks(
+    ticker="CONTROLH-2026-D",
+    start_ts=start_ts,
+    end_ts=end_ts,
+    period_interval=60,
+)
 
-project_root = Path(__file__).resolve().parents[3]
-output_path = project_root / "data" / "raw" / "polymarket_markets.csv"
-
-df.to_csv(output_path, index=False)
+print(candles.keys())
+print(len(candles["candlesticks"]))
+print(candles["candlesticks"][:3])
