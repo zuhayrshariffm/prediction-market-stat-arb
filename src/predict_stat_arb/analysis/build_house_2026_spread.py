@@ -14,8 +14,6 @@ def parse_kalshi_close(value):
     return None
 
 from src.predict_stat_arb.ingestion.polymarket_client import PolymarketClient
-from src.predict_stat_arb.ingestion.kalshi_client import KalshiClient
-
 
 from src.predict_stat_arb.config import (
     DEFAULT_MERGE_TOLERANCE,
@@ -172,9 +170,6 @@ def main():
         output_dir = project_root / "data" / "processed"
 
     poly_client = PolymarketClient()
-    kalshi_client = KalshiClient()
-
-    project_root = Path(__file__).resolve().parents[3]
 
     if args.kalshi_prices_path is not None:
         kalshi_path = Path(args.kalshi_prices_path)

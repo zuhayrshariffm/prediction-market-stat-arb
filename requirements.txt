@@ -12,10 +12,13 @@ packaging==26.2
 pandas==3.0.2
 pillow==12.2.0
 pluggy==1.6.0
+psycopg==3.3.3
+psycopg-binary==3.3.3
 Pygments==2.20.0
 pyparsing==3.3.2
 pytest==9.0.3
 python-dateutil==2.9.0.post0
 requests==2.33.1
 six==1.17.0
+typing_extensions==4.15.0
 urllib3==2.6.3

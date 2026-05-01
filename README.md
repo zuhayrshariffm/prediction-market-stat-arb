@@ -82,6 +82,42 @@ data/processed/house_2026_dem_spread_summary_YYYYMMDD_HHMMSS.csv
 data/processed/house_2026_dem_spread_plot.png
 ```
 
+## Database Schema
+
+The project includes an initial PostgreSQL schema at:
+
+```text
+src/predict_stat_arb/database/schema.sql
+```
+
+The schema defines tables for raw Kalshi price history, raw Polymarket price history, and processed House 2026 Democratic spread data.
+
+The current pipeline writes processed CSV files first, then loads the processed spread data into PostgreSQL.
+
+Start local Postgres with Docker Compose:
+
+```bash
+docker compose up -d
+```
+
+Set the database connection string:
+
+```bash
+export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/predict_stat_arb
+```
+
+Load the processed spread data into Postgres:
+
+```bash
+python -m src.predict_stat_arb.database.load_spread_to_postgres
+```
+
+Verify loaded rows:
+
+```bash
+docker exec -it predict_stat_arb_postgres psql -U postgres -d predict_stat_arb
+```
+
 ## Planned Stack
 
 - Python for ingestion, processing, and analysis
