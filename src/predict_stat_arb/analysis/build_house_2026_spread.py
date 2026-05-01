@@ -1,6 +1,9 @@
 from pathlib import Path
 import pandas as pd
 import ast
+import argparse
+from datetime import datetime, timezone
+
 
 def parse_kalshi_close(value):
     parsed = ast.literal_eval(value)
@@ -21,6 +24,22 @@ from src.predict_stat_arb.config import (
     HOUSE_2026_KALSHI_DEM_TICKER,
     HOUSE_2026_POLYMARKET_DEM_TOKEN_ID,
 )
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--kalshi-prices-path",
+        type=str,
+        default=None,
+        help="Path to Kalshi price history CSV.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        default=None,
+        help="Directory where processed outputs will be saved.",
+    )
+    return parser.parse_args()
 
 def load_kalshi_yes_prices(kalshi_path):
     kalshi_df = pd.read_csv(kalshi_path)
@@ -114,40 +133,58 @@ def build_spread_summary(combined):
         "large_spread_hours": large_spread_hours,
         "large_spread_share": round(large_spread_share, 3),
     }
-def save_outputs(combined, summary, project_root):
-    processed_path = (
-        project_root
-        / "data"
-        / "processed"
-        / "house_2026_dem_spread_latest.csv"
-    )
 
-    summary_path = (
-        project_root
-        / "data"
-        / "processed"
-        / "house_2026_dem_spread_summary_latest.csv"
+def save_outputs(combined, summary, output_dir):
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+
+    processed_path = output_dir / "house_2026_dem_spread_latest.csv"
+    summary_path = output_dir / "house_2026_dem_spread_summary_latest.csv"
+
+    timestamped_processed_path = (
+        output_dir / f"house_2026_dem_spread_{timestamp}.csv"
+    )
+    timestamped_summary_path = (
+        output_dir / f"house_2026_dem_spread_summary_{timestamp}.csv"
     )
 
     output_df = combined.drop(columns=["timestamp"]).reset_index()
+    summary_df = pd.DataFrame([summary])
 
     output_df.to_csv(processed_path, index=False)
-    pd.DataFrame([summary]).to_csv(summary_path, index=False)
+    output_df.to_csv(timestamped_processed_path, index=False)
+
+    summary_df.to_csv(summary_path, index=False)
+    summary_df.to_csv(timestamped_summary_path, index=False)
 
     print(f"Saved processed spread data to: {processed_path}")
+    print(f"Saved timestamped spread data to: {timestamped_processed_path}")
     print(f"Saved spread summary to: {summary_path}")
+    print(f"Saved timestamped summary to: {timestamped_summary_path}")
 
 def main():
+    args = parse_args()
+
+    project_root = Path(__file__).resolve().parents[3]
+
+    if args.output_dir is not None:
+        output_dir = Path(args.output_dir)
+    else:
+        output_dir = project_root / "data" / "processed"
+
     poly_client = PolymarketClient()
     kalshi_client = KalshiClient()
 
     project_root = Path(__file__).resolve().parents[3]
 
-    kalshi_path = (
-        project_root
-        / "data/raw"
-        / "kalshi_prices_CONTROLH-2026-D_CONTROLH-2026-R_latest.csv"
-    )
+    if args.kalshi_prices_path is not None:
+        kalshi_path = Path(args.kalshi_prices_path)
+    else:
+        kalshi_path = (
+                project_root
+                / "data"
+                / "raw"
+                / "kalshi_prices_CONTROLH-2026-D_CONTROLH-2026-R_latest.csv"
+        )
 
     poly = fetch_polymarket_yes_prices(poly_client)
     kalshi_dem = load_kalshi_yes_prices(kalshi_path)
@@ -165,7 +202,7 @@ def main():
     print("Hours with |spread| > 1 cent:", summary["large_spread_hours"])
     print("Share with |spread| > 1 cent:", summary["large_spread_share"])
 
-    save_outputs(combined, summary, project_root)
+    save_outputs(combined, summary, output_dir)
 
 
 if __name__ == "__main__":
