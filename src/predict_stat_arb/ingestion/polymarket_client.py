@@ -77,21 +77,7 @@ class PolymarketClient:
 
         return [self.clean_market(m) for m in markets]
 
-    def get_price_history(self, token_id, interval="1h", fidelity=60):
-        params = {
-            "market": token_id,
-            "interval": interval,
-            "fidelity": fidelity,
-        }
-
-        data = requests.get(
-            "https://clob.polymarket.com/prices-history",
-            params=params
-        ).json()
-
-        return data["history"]
-
-    def get_price_history(self, token_id, interval="1h", fidelity=60):
+    def get_price_history(self, token_id, interval="max", fidelity=60):
         params = {
             "market": token_id,
             "interval": interval,
@@ -100,15 +86,28 @@ class PolymarketClient:
 
         response = requests.get(
             "https://clob.polymarket.com/prices-history",
-            params=params
+            params=params,
+            timeout=self.timeout,
         )
+        response.raise_for_status()
 
         data = response.json()
+
+        if "history" not in data:
+            raise RuntimeError(f"Unexpected Polymarket price history response: {data}")
 
         history = data["history"]
 
         df = pd.DataFrame(history)
-        df["timestamp"] = pd.to_datetime(df["t"], unit="s")
+
+        if df.empty:
+            return pd.DataFrame(columns=["token_id", "timestamp", "p"])
+
+        df["timestamp"] = pd.to_datetime(df["t"], unit="s", utc=True)
         df["token_id"] = token_id
+        df["p"] = df["p"].astype(float)
 
         return df[["token_id", "timestamp", "p"]]
+
+    def get_event_by_slug(self, slug):
+        return self._get(f"/events/slug/{slug}")
