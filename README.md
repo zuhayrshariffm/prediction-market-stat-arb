@@ -87,6 +87,10 @@ Run tests:
 python -m pytest
 ```
 
+## Dashboard Preview
+
+![Dashboard preview](docs/images/dashboard.png)
+
 ## Current Outputs
 
 The build script writes both `latest` files and timestamped snapshots:
