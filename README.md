@@ -17,10 +17,14 @@ The current phase focuses on historical spread analysis between comparable YES/N
 
 ## Current Market
 
-The first analysis compares the 2026 House-control Democratic contract across both venues:
+The first analysis compares this market across both venues:
+
+```text
+Which party will win the U.S. House? DEM
+```
 
 - Kalshi: `CONTROLH-2026-D`
-- Polymarket: Democratic House-control YES token
+- Polymarket: DEM YES token for the comparable U.S. House market
 
 The processed spread is calculated as:
 

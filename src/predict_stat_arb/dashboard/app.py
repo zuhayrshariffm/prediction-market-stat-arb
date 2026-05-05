@@ -49,12 +49,12 @@ def load_spread_from_csv():
 
 
 st.set_page_config(
-    page_title="Prediction Market Spread Dashboard",
+    page_title="Which party will win the U.S. House? DEM",
     layout="wide",
 )
 
-st.title("Prediction Market Spread Dashboard")
-st.subheader("House 2026 DEM: Polymarket - Kalshi")
+st.title("Which party will win the U.S. House? DEM")
+st.subheader("Polymarket - Kalshi spread monitor")
 
 df, data_source = load_spread_data()
 st.caption(f"Data source: {data_source}")
