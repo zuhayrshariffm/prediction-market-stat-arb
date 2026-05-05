@@ -64,6 +64,14 @@ Plot the spread:
 python -m src.predict_stat_arb.analysis.plot_house_2026_spread
 ```
 
+Run the Streamlit dashboard:
+
+```bash
+python -m streamlit run src/predict_stat_arb/dashboard/app.py
+```
+
+The dashboard reads from PostgreSQL when `DATABASE_URL` is set and falls back to the latest processed CSV otherwise.
+
 Run tests:
 
 ```bash
