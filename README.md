@@ -51,6 +51,7 @@ Fetch Kalshi prices        Fetch Polymarket prices
 - **Processing:** the House 2026 spread builder normalizes UTC timestamps, aligns comparable observations, validates prices, and computes `dem_spread`.
 - **Storage:** processed spread data is saved as CSV artifacts and loaded into PostgreSQL using the schema in `src/predict_stat_arb/database/schema.sql`.
 - **Orchestration:** Prefect runs the end-to-end flow for fresh ingestion, spread processing, and Postgres loading.
+- **API:** FastAPI exposes health, latest spread, and recent spread-history endpoints backed by Postgres.
 - **Dashboard:** Streamlit displays latest spread metrics, historical spread charts, and recent observations from Postgres or CSV fallback.
 - **Testing:** pytest covers validation logic, spread calculation, and CSV loader timestamp parsing.
 
@@ -96,6 +97,22 @@ python -m streamlit run src/predict_stat_arb/dashboard/app.py
 ```
 
 The dashboard reads from PostgreSQL when `DATABASE_URL` is set and falls back to the latest processed CSV otherwise.
+
+Run the FastAPI service:
+
+```bash
+export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/predict_stat_arb
+python -m uvicorn src.predict_stat_arb.api.app:app --reload
+```
+
+Example API endpoints:
+
+```text
+http://127.0.0.1:8000/health
+http://127.0.0.1:8000/spread/latest
+http://127.0.0.1:8000/spread/history?limit=5
+http://127.0.0.1:8000/docs
+```
 
 Run tests:
 
