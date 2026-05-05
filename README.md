@@ -22,20 +22,27 @@ Positive spread means Polymarket is pricing the contract higher than Kalshi. Neg
 ## Current Pipeline
 
 ```text
-Kalshi API data
-Polymarket API data
+Prefect orchestration
         |
         v
-Normalize timestamps and prices
-        |
-        v
-Merge comparable hourly observations
-        |
-        v
-Validate prices, timestamps, and overlap
-        |
-        v
-Save processed spread data, summary stats, and plot
+Fetch Kalshi prices        Fetch Polymarket prices
+        |                           |
+        +-------------+-------------+
+                      |
+                      v
+        Normalize timestamps and prices
+                      |
+                      v
+        Merge comparable hourly observations
+                      |
+                      v
+        Validate prices, timestamps, and overlap
+                      |
+                      v
+        Save processed artifacts and load Postgres
+                      |
+                      v
+              Streamlit dashboard
 ```
 
 ## Run Current Pipeline
@@ -90,6 +97,32 @@ python -m pytest
 ## Dashboard Preview
 
 ![Dashboard preview](docs/images/dashboard.png)
+
+## Refresh Dashboard Data
+
+Start Postgres:
+
+```bash
+docker compose up -d
+```
+
+Set the database connection string:
+
+```bash
+export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/predict_stat_arb
+```
+
+Run the orchestrated pipeline:
+
+```bash
+python -m src.predict_stat_arb.orchestration.house_2026_flow
+```
+
+Start the dashboard:
+
+```bash
+python -m streamlit run src/predict_stat_arb/dashboard/app.py
+```
 
 ## Current Outputs
 

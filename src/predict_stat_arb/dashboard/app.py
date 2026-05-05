@@ -60,13 +60,15 @@ df, data_source = load_spread_data()
 st.caption(f"Data source: {data_source}")
 
 latest = df.sort_values("timestamp").iloc[-1]
+latest_timestamp = latest["timestamp"].strftime("%Y-%m-%d %H:%M UTC")
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5 = st.columns(5)
 
 col1.metric("Latest Spread", f"{latest['spread_cents']:.2f} cents")
 col2.metric("Mean Spread", f"{df['spread_cents'].mean():.2f} cents")
 col3.metric("Max Spread", f"{df['spread_cents'].max():.2f} cents")
 col4.metric("Min Spread", f"{df['spread_cents'].min():.2f} cents")
+col5.metric("Latest Timestamp", latest_timestamp)
 
 st.line_chart(
     df.set_index("timestamp")[["spread_cents"]],
@@ -95,4 +97,3 @@ st.caption(
     f"{large_spread_count} of {len(df)} observations "
     f"({large_spread_share:.1%}) have an absolute spread greater than 1 cent."
 )
-
