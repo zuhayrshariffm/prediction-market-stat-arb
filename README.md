@@ -45,6 +45,15 @@ Fetch Kalshi prices        Fetch Polymarket prices
               Streamlit dashboard
 ```
 
+## Architecture
+
+- **Ingestion:** API clients and fetch scripts collect Kalshi candlesticks and Polymarket price history.
+- **Processing:** the House 2026 spread builder normalizes UTC timestamps, aligns comparable observations, validates prices, and computes `dem_spread`.
+- **Storage:** processed spread data is saved as CSV artifacts and loaded into PostgreSQL using the schema in `src/predict_stat_arb/database/schema.sql`.
+- **Orchestration:** Prefect runs the end-to-end flow for fresh ingestion, spread processing, and Postgres loading.
+- **Dashboard:** Streamlit displays latest spread metrics, historical spread charts, and recent observations from Postgres or CSV fallback.
+- **Testing:** pytest covers validation logic, spread calculation, and CSV loader timestamp parsing.
+
 ## Run Current Pipeline
 
 Fetch recent Kalshi price history:
