@@ -4,6 +4,17 @@ This project builds a production-style prediction-market data pipeline that inge
 
 The current phase focuses on historical spread analysis between comparable YES/NO markets across Kalshi and Polymarket. This is not yet an executable arbitrage system; it is a reproducible data pipeline and research workflow for measuring cross-market pricing differences.
 
+## Project Highlights
+
+- Built an end-to-end prediction-market data pipeline ingesting Kalshi and Polymarket API data.
+- Normalized UTC time-series prices and computed cross-market pricing spreads for comparable event contracts.
+- Added data-quality checks for timestamp overlap, duplicate timestamps, and valid probability ranges.
+- Stored processed spread data in PostgreSQL using Docker Compose for reproducible local infrastructure.
+- Orchestrated ingestion, processing, and database loading with Prefect.
+- Served latest and historical spread data through FastAPI endpoints.
+- Built a Streamlit dashboard for spread monitoring with Postgres and CSV fallback.
+- Added pytest coverage for validation, spread calculations, loader behavior, and summary metrics.
+
 ## Current Market
 
 The first analysis compares the 2026 House-control Democratic contract across both venues:
