@@ -58,6 +58,15 @@ Build the spread dataset with explicit paths:
 python -m src.predict_stat_arb.analysis.build_house_2026_spread --kalshi-prices-path data/raw/kalshi_prices_CONTROLH-2026-D_CONTROLH-2026-R_latest.csv --output-dir data/processed
 ```
 
+Run the full orchestrated pipeline with Prefect:
+
+```bash
+export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/predict_stat_arb
+python -m src.predict_stat_arb.orchestration.house_2026_flow
+```
+
+This flow fetches fresh Kalshi prices, builds the processed House 2026 spread dataset, and loads the result into Postgres.
+
 Plot the spread:
 
 ```bash
