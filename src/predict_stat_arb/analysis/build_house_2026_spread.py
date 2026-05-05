@@ -37,7 +37,22 @@ def parse_args():
         default=None,
         help="Directory where processed outputs will be saved.",
     )
+    parser.add_argument(
+        "--polymarket-prices-path",
+        type=str,
+        default=None,
+        help="Path to Polymarket price history CSV.",
+    )
+
     return parser.parse_args()
+
+def load_polymarket_yes_prices(polymarket_path):
+    poly = pd.read_csv(polymarket_path)
+    poly["timestamp"] = pd.to_datetime(poly["timestamp"], utc=True)
+    poly = poly.rename(columns={"p": "poly_dem"})
+
+    return poly[["timestamp", "poly_dem"]]
+
 
 def load_kalshi_yes_prices(kalshi_path):
     kalshi_df = pd.read_csv(kalshi_path)
@@ -71,6 +86,12 @@ def fetch_polymarket_yes_prices(client):
     return poly_dem[["timestamp", "poly_dem"]]
 
 def build_spread_table(kalshi_dem, poly):
+    kalshi_dem = kalshi_dem.copy()
+    poly = poly.copy()
+
+    kalshi_dem.index = pd.to_datetime(kalshi_dem.index, utc=True).astype("datetime64[ns, UTC]")
+    poly["timestamp"] = pd.to_datetime(poly["timestamp"], utc=True).astype("datetime64[ns, UTC]")
+
     combined = pd.merge_asof(
         kalshi_dem.sort_index(),
         poly.sort_values("timestamp"),
@@ -181,7 +202,11 @@ def main():
                 / "kalshi_prices_CONTROLH-2026-D_CONTROLH-2026-R_latest.csv"
         )
 
-    poly = fetch_polymarket_yes_prices(poly_client)
+    if args.polymarket_prices_path is not None:
+        poly = load_polymarket_yes_prices(Path(args.polymarket_prices_path))
+    else:
+        poly = fetch_polymarket_yes_prices(poly_client)
+
     kalshi_dem = load_kalshi_yes_prices(kalshi_path)
 
     combined = build_spread_table(kalshi_dem, poly)
